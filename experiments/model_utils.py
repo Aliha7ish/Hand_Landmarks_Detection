@@ -5,181 +5,149 @@ from sklearn.model_selection import GridSearchCV
 import numpy as np
 from visualizations import *
 
-def train_model(model, X_train, y_train):
-    """
-    Train the given model using the provided training data.
-    
-    :param model: sklearn model instance, the machine learning model to be trained.
-    :param X_train: df.DataFrame, the training features.
-    :param y_train: df.Series, The training labels
+class ModelTrainer:
 
-    return: the trained model. 
-    """
+    def __init__(self, X_train, y_train):
+        self.X_train = X_train
+        self.y_train = y_train
+        self.results = {}
 
-    model.fit(X_train, y_train)
+    # ---------------------------
+    # Train single model
+    # ---------------------------
+    def train(self, model, model_name):
+        model.fit(self.X_train, self.y_train)
 
-    return model
-    
-def evaluate_model(model, X, y):
-    """
-    Evaluate the performance of the trained model on the development set and return the evaluation metrics.
-    
-    :param model: trained model instance, the machine learning model to be evaluated.
-    :param X: df.DataFrame, the development features.
-    :param y: df.Series, The development labels.
-
-    Returns:
-    metrics: dict, dictionary containing the performance metrics as accuracy, precision, recall, and F1-score. 
-
-    """
-
-    y_pred = model.predict(X)
-
-    accuracy = accuracy_score(y, y_pred)
-    precision = precision_score(y, y_pred, average="macro")
-    recall = recall_score(y, y_pred, average="macro")
-    f1 = f1_score(y, y_pred, average="macro")
-    cm = confusion_matrix(y, y_pred)
-
-    # strore them into metrics dict
-    metrics = {
-        "accuracy": accuracy,
-        "precision": precision,
-        "recall": recall,
-        "f1_score": f1,
-        "confusion_matrix": cm
-    }
-
-    return metrics
-
-
-def display_metrics(model, X, y, clf_name):
-    rf_metrics_train = evaluate_model(model, X, y)
-
-    for metric_name, metric_value in rf_metrics_train.items():
-        if metric_name != "confusion_matrix":
-            print(f"{clf_name} {metric_name} = {metric_value:.2f}")
-
-
-def run_model_selection_pipeline(models_with_params_dict, 
-                                 X_train, y_train, 
-                                 X_val, y_val,
-                                 cv=3,
-                                 scoring="f1_macro"):
-    
-    results = {}
-
-    for model_name, v in models_with_params_dict.items():
-
-        grid = GridSearchCV(
-            estimator=v["model"],
-            param_grid=v["params"],
-            cv=cv,
-            scoring=scoring,
-            n_jobs=-1
-        )
-
-        grid.fit(X_train, y_train)
-
-        best_model = grid.best_estimator_
-        metrics = evaluate_model(best_model, X_val, y_val)
-
-        results[model_name] = {
-            "best_params": grid.best_params_,
-            "best_cv_score": grid.best_score_,
-            "model": best_model,
-            "metrics": metrics
+        self.results[model_name] = {
+            "model": model,
+            "metrics": {}
         }
 
-    return results
+        return model
+
+    # ---------------------------
+    # Evaluate
+    # ---------------------------
+    def evaluate(self, model, X, y):
+        y_pred = model.predict(X)
+
+        return {
+            "accuracy": accuracy_score(y, y_pred),
+            "precision": precision_score(y, y_pred, average="macro"),
+            "recall": recall_score(y, y_pred, average="macro"),
+            "f1_score": f1_score(y, y_pred, average="macro"),
+            "confusion_matrix": confusion_matrix(y, y_pred)
+        }
+
+    # ---------------------------
+    # Evaluate and store (GENERALIZED)
+    # ---------------------------
+    def evaluate_and_store(self, model_name, X, y, dataset_name):
+
+        if model_name not in self.results:
+            raise ValueError(f"Model '{model_name}' not found. Train it first.")
+
+        model = self.results[model_name]["model"]
+
+        metrics = self.evaluate(model, X, y)
+
+        self.results[model_name]["metrics"][dataset_name] = metrics
+    
+    # ---------------------------
+    # Grid Search
+    # ---------------------------
+    def grid_search(self, models_with_params_dict, cv=3, scoring="f1_macro"):
+        """
+        Perform GridSearch for multiple models and store best estimators.
+        """
+
+        for model_name, v in models_with_params_dict.items():
+
+            grid = GridSearchCV(
+                estimator=v["model"],
+                param_grid=v["params"],
+                cv=cv,
+                scoring=scoring,
+                n_jobs=-1
+            )
+
+            grid.fit(self.X_train, self.y_train)
+
+            best_model = grid.best_estimator_
+
+            # Store using SAME structure as train()
+            self.results[model_name] = {
+                "model": best_model,
+                "metrics": {},  # prepare for train/dev/test storage
+                "best_params": grid.best_params_,
+                "best_cv_score": grid.best_score_
+            }
+
+        return self.results
 
 
+    # ---------------------------
+    # Print Results
+    # ---------------------------
+    def print_results(self, dataset_name):
 
-def plot_confusion_matrix(cm, label_encoder, model_name=None):
-    """
-    Plot raw and normalized confusion matrices.
+        for model_name, info in self.results.items():
 
-    Parameters
-    ----------
-    cm : np.ndarray
-        Confusion matrix (raw counts)
-    label_encoder : LabelEncoder
-        Fitted LabelEncoder for decoding class names
-    """
-    # Raw counts
-    fig, ax = plt.subplots(figsize=(10, 10))
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-                                  display_labels=label_encoder.classes_)
-    disp.plot(ax=ax, cmap="Blues", xticks_rotation=90, values_format="d")
-    plt.title("Confusion Matrix (Counts)")
-    plt.show()
+            metrics = info["metrics"].get(dataset_name)
 
-    # Normalized percentages
-    cm_norm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-    fig, ax = plt.subplots(figsize=(10, 10))
-    disp_norm = ConfusionMatrixDisplay(confusion_matrix=cm_norm,
-                                       display_labels=label_encoder.classes_)
-    disp_norm.plot(ax=ax, cmap="Blues", xticks_rotation=90, values_format=".0%")
-    plt.title(f"Confusion Matrix (Normalized) | {model_name}")
-    plt.show()
+            if metrics is None:
+                print(f"\n⚠ No metrics stored for {model_name} on {dataset_name}")
+                continue
 
-def plot_two_class_misclassified_grid(model, X, y_true, label_encoder, class1, class2, n_per_cell=1):
-    """
-    Plot a 2x2 mini confusion matrix for two selected classes with images.
+            print(f"\n📌 {model_name.upper()} on {dataset_name}")
 
-    Parameters
-    ----------
-    model : sklearn-like model
-        Fitted classifier with .predict().
-    X : pd.DataFrame or np.ndarray
-        Feature data (hand landmarks).
-    y_true : np.ndarray
-        True labels (encoded).
-    label_encoder : LabelEncoder
-        Fitted LabelEncoder to decode class names.
-    class1, class2 : str
-        Names of the two classes to compare.
-    n_per_cell : int
-        Number of images to show per cell.
-    """
-    # Encode the classes
-    c1_label = label_encoder.transform([class1])[0]
-    c2_label = label_encoder.transform([class2])[0]
+            for metric, value in metrics.items():
+                if metric != "confusion_matrix":
+                    print(f"{metric}: {value:.4f}")
 
-    y_pred = model.predict(X)
+    # ---------------------------
+    # Confusion Matrix (GENERALIZED)
+    # ---------------------------
+    def plot_confusion_matrix(self, model_name, label_encoder, dataset_name):
+        metrics = self.results[model_name]["metrics"].get(dataset_name)
 
-    fig, axes = plt.subplots(2, 2, figsize=(8, 8))
-    axes = axes.flatten()
+        if metrics is None:
+            raise ValueError(f"No metrics stored for '{dataset_name}'")
 
-    # Grid positions for True vs Pred
-    grid_positions = [
-        (c1_label, c1_label),  # True A, Pred A
-        (c1_label, c2_label),  # True A, Pred B
-        (c2_label, c1_label),  # True B, Pred A
-        (c2_label, c2_label),  # True B, Pred B
-    ]
+        cm = metrics["confusion_matrix"]
 
-    for i, (true_lbl, pred_lbl) in enumerate(grid_positions):
-        idxs = np.where((y_true == true_lbl) & (y_pred == pred_lbl))[0]
-        axes[i].axis('off')  # hide axis by default
+        # Normalize
+        cm_norm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
 
-        if len(idxs) == 0:
-            axes[i].set_title(f"T: {label_encoder.inverse_transform([true_lbl])[0]}\n"
-                              f"P: {label_encoder.inverse_transform([pred_lbl])[0]}\n(No samples)")
-            continue
+        # Create ONE figure with TWO subplots
+        fig, axes = plt.subplots(1, 2, figsize=(18, 8))
 
-        # Pick up to n_per_cell examples
-        for j, idx in enumerate(idxs[:n_per_cell]):
-            row = X.iloc[idx] if hasattr(X, "iloc") else X[idx]
-            xs, ys = extract_hand_landmarks(row)
-            axes[i].scatter(xs, ys, c='red')
-            for start, end in HAND_CONNECTIONS:
-                axes[i].plot([xs[start], xs[end]], [ys[start], ys[end]], c='black')
+        # -------------------
+        # Raw Counts
+        # -------------------
+        disp = ConfusionMatrixDisplay(
+            confusion_matrix=cm,
+            display_labels=label_encoder.classes_
+        )
+        disp.plot(ax=axes[0], cmap="Blues", xticks_rotation=90, values_format="d")
+        axes[0].set_title(f"Confusion Matrix (Counts)\n{model_name} | {dataset_name}")
 
-            axes[i].invert_yaxis()
-            axes[i].axis('off')
-            axes[i].set_title(f"T: {label_encoder.inverse_transform([true_lbl])[0]}\n"
-                              f"P: {label_encoder.inverse_transform([pred_lbl])[0]}")
+        # -------------------
+        # Normalized
+        # -------------------
+        disp_norm = ConfusionMatrixDisplay(
+            confusion_matrix=cm_norm,
+            display_labels=label_encoder.classes_
+        )
+        disp_norm.plot(ax=axes[1], cmap="Blues", xticks_rotation=90, values_format=".0%")
+        axes[1].set_title(f"Confusion Matrix (Normalized)\n{model_name} | {dataset_name}")
 
-    plt.tight_layout()
-    plt.show()
+        plt.tight_layout()
+        plt.show()
+
+
+    def get_model(self, model_name):
+        if model_name not in self.results:
+            raise ValueError(f"Model '{model_name}' not found.")
+        
+        return self.results[model_name]["model"]

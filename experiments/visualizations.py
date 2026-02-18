@@ -318,3 +318,64 @@ def plot_two_class_table(model, X, y, label_encoder, class1, class2, n_per_cell=
 
     plt.tight_layout(rect=[0.1, 0.1, 0.95, 0.9])
     plt.show()
+
+def plot_two_class_misclassified_grid(model, X, y_true, label_encoder, class1, class2, n_per_cell=1):
+    """
+    Plot a 2x2 mini confusion matrix for two selected classes with images.
+
+    Parameters
+    ----------
+    model : sklearn-like model
+        Fitted classifier with .predict().
+    X : pd.DataFrame or np.ndarray
+        Feature data (hand landmarks).
+    y_true : np.ndarray
+        True labels (encoded).
+    label_encoder : LabelEncoder
+        Fitted LabelEncoder to decode class names.
+    class1, class2 : str
+        Names of the two classes to compare.
+    n_per_cell : int
+        Number of images to show per cell.
+    """
+    # Encode the classes
+    c1_label = label_encoder.transform([class1])[0]
+    c2_label = label_encoder.transform([class2])[0]
+
+    y_pred = model.predict(X)
+
+    fig, axes = plt.subplots(2, 2, figsize=(8, 8))
+    axes = axes.flatten()
+
+    # Grid positions for True vs Pred
+    grid_positions = [
+        (c1_label, c1_label),  # True A, Pred A
+        (c1_label, c2_label),  # True A, Pred B
+        (c2_label, c1_label),  # True B, Pred A
+        (c2_label, c2_label),  # True B, Pred B
+    ]
+
+    for i, (true_lbl, pred_lbl) in enumerate(grid_positions):
+        idxs = np.where((y_true == true_lbl) & (y_pred == pred_lbl))[0]
+        axes[i].axis('off')  # hide axis by default
+
+        if len(idxs) == 0:
+            axes[i].set_title(f"T: {label_encoder.inverse_transform([true_lbl])[0]}\n"
+                              f"P: {label_encoder.inverse_transform([pred_lbl])[0]}\n(No samples)")
+            continue
+
+        # Pick up to n_per_cell examples
+        for j, idx in enumerate(idxs[:n_per_cell]):
+            row = X.iloc[idx] if hasattr(X, "iloc") else X[idx]
+            xs, ys = extract_hand_landmarks(row)
+            axes[i].scatter(xs, ys, c='red')
+            for start, end in HAND_CONNECTIONS:
+                axes[i].plot([xs[start], xs[end]], [ys[start], ys[end]], c='black')
+
+            axes[i].invert_yaxis()
+            axes[i].axis('off')
+            axes[i].set_title(f"T: {label_encoder.inverse_transform([true_lbl])[0]}\n"
+                              f"P: {label_encoder.inverse_transform([pred_lbl])[0]}")
+
+    plt.tight_layout()
+    plt.show()
