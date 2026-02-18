@@ -5,6 +5,9 @@ from PIL import Image
 import numpy as np
 import random
 from matplotlib.lines import Line2D
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
 
 HAND_CONNECTIONS = [
     (0, 1), (1, 2), (2, 3), (3, 4),        # Thumb
@@ -168,23 +171,20 @@ def plot_class_distribution_pie(df, label_col="label", figsize=(8, 8)):
     plt.tight_layout()
     plt.show()
 
-def plot_correct_landmarks(model, df_features, y_true, le, n_samples=9):
-    """
-    Plot hand skeletons of correctly classified samples.
 
-    Parameters
-    ----------
-    model : sklearn-like model
-        Trained classifier with .predict()
-    df_features : pd.DataFrame
-        DataFrame containing x1..x21, y1..y21
-    y_true : np.ndarray or pd.Series
-        True labels (encoded)
-    le : LabelEncoder
-        LabelEncoder for decoding labels
-    n_samples : int
-        Number of samples to plot
-    """
+
+
+def plot_correct_landmarks(
+    model,
+    df_features,
+    y_true,
+    le,
+    model_name="Model",
+    dataset_name="Test",
+    accuracy=None,
+    n_samples=9
+):
+
     y_pred = model.predict(df_features)
     correct_idx = np.where(y_pred == y_true)[0]
 
@@ -192,190 +192,214 @@ def plot_correct_landmarks(model, df_features, y_true, le, n_samples=9):
         print("No correct predictions found!")
         return
 
-    selected_idx = np.random.choice(correct_idx, size=min(n_samples, len(correct_idx)), replace=False)
+    selected_idx = np.random.choice(
+        correct_idx,
+        size=min(n_samples, len(correct_idx)),
+        replace=False
+    )
 
     cols = int(np.sqrt(n_samples))
-    rows = int(np.ceil(len(selected_idx)/cols))
+    rows = int(np.ceil(len(selected_idx) / cols))
 
-    fig, axes = plt.subplots(rows, cols, figsize=(cols*3, rows*3))
+    subplot_titles = []
 
-    if rows == 1 and cols == 1:
-        axes = np.array([[axes]])
-    elif rows == 1:
-        axes = np.array([axes])
-    elif cols == 1:
-        axes = np.array([[ax] for ax in axes])
+    for idx in selected_idx:
+        true_label = le.inverse_transform([y_true[idx]])[0]
+        subplot_titles.append(true_label)
+
+    fig = make_subplots(
+        rows=rows,
+        cols=cols,
+        subplot_titles=subplot_titles,
+        horizontal_spacing=0.05,
+        vertical_spacing=0.08
+    )
 
     for i, idx in enumerate(selected_idx):
-        row = i // cols
-        col = i % cols
-        ax = axes[row, col]
 
-        xs, ys = extract_hand_landmarks(df_features.iloc[idx])
-        plot_hand_skeleton(xs, ys, ax)
+        row = i // cols + 1
+        col = i % cols + 1
 
-        true_label = le.inverse_transform([y_true[idx]])[0]
-        ax.set_title(f"{true_label}", fontsize=10)
+        if hasattr(df_features, "iloc"):
+            row_data = df_features.iloc[idx]
+        else:
+            row_data = df_features[idx]
 
-    # Hide any unused subplots
-    for j in range(len(selected_idx), rows*cols):
-        row = j // cols
-        col = j % cols
-        axes[row, col].axis("off")
+        xs, ys = extract_hand_landmarks(row_data)
 
-    plt.tight_layout()
-    plt.show()
+        # Scatter points
+        fig.add_trace(
+            go.Scatter(
+                x=xs,
+                y=ys,
+                mode="markers",
+                marker=dict(size=4),
+                showlegend=False
+            ),
+            row=row,
+            col=col
+        )
+
+        # Hand connections
+        for start, end in HAND_CONNECTIONS:
+            fig.add_trace(
+                go.Scatter(
+                    x=[xs[start], xs[end]],
+                    y=[ys[start], ys[end]],
+                    mode="lines",
+                    line=dict(width=1),
+                    showlegend=False
+                ),
+                row=row,
+                col=col
+            )
+
+        fig.update_xaxes(visible=False, row=row, col=col)
+        fig.update_yaxes(visible=False, autorange="reversed", row=row, col=col)
+
+    # Hide unused cells
+    total_cells = rows * cols
+    for j in range(len(selected_idx), total_cells):
+        row = j // cols + 1
+        col = j % cols + 1
+        fig.update_xaxes(visible=False, row=row, col=col)
+        fig.update_yaxes(visible=False, row=row, col=col)
+
+    # -----------------------------
+    # Main Title
+    # -----------------------------
+    main_title = f"{model_name} | {dataset_name} | Correct Predictions"
+    if accuracy is not None:
+        main_title += f"<br>Accuracy: {accuracy:.4f}"
+
+    fig.update_layout(
+        height=rows * 250,
+        width=cols * 250,
+        title=dict(
+            text=main_title,
+            x=0.5,
+            xanchor="center"
+        ),
+        margin=dict(t=120),
+        showlegend=False
+    )
+
+    fig.show()
+
+    return fig
 
 
-def plot_two_class_table(model, X, y, label_encoder, class1, class2, n_per_cell=4, cell_padding=1.5):
-    """
-    Plot a beautiful 2x2 table for two classes with hand skeletons.
 
-    Parameters
-    ----------
-    model : sklearn estimator
-        Trained classifier
-    X : pd.DataFrame or np.ndarray
-        Features
-    y : pd.Series or np.ndarray
-        True labels
-    label_encoder : LabelEncoder
-        To decode class names
-    class1 : str
-        First class
-    class2 : str
-        Second class
-    n_per_cell : int
-        Number of images per cell
-    cell_padding : float
-        Spacing multiplier between mini-images
-    """
+def plot_two_class_table(
+    model,
+    X,
+    y,
+    label_encoder,
+    class1,
+    class2,
+    model_name="Model",
+    dataset_name="Test",
+    f1_score=None,
+    n_per_cell=4,
+    cell_padding=1.5
+):
+
     cl_a = label_encoder.transform([class1])[0]
     cl_b = label_encoder.transform([class2])[0]
 
-    # Predictions
     y_pred = model.predict(X)
 
-    # Four cases
-    if isinstance(X, pd.DataFrame):
+    if isinstance(X, np.ndarray):
         X_aa = X[(y == cl_a) & (y_pred == cl_a)]
         X_ab = X[(y == cl_a) & (y_pred == cl_b)]
         X_ba = X[(y == cl_b) & (y_pred == cl_a)]
         X_bb = X[(y == cl_b) & (y_pred == cl_b)]
     else:
-        X_aa = X[(y == cl_a) & (y_pred == cl_a)]
-        X_ab = X[(y == cl_a) & (y_pred == cl_b)]
-        X_ba = X[(y == cl_b) & (y_pred == cl_a)]
-        X_bb = X[(y == cl_b) & (y_pred == cl_b)]
+        X_aa = X[(y == cl_a) & (y_pred == cl_a)].values
+        X_ab = X[(y == cl_a) & (y_pred == cl_b)].values
+        X_ba = X[(y == cl_b) & (y_pred == cl_a)].values
+        X_bb = X[(y == cl_b) & (y_pred == cl_b)].values
 
     cases = [X_aa, X_ab, X_ba, X_bb]
-    # case_titles = ["True A / Pred A", "True A / Pred B", "True B / Pred A", "True B / Pred B"]
 
-    # Create main 2x2 grid
-    fig, main_axes = plt.subplots(2, 2, figsize=(10, 8))
-    main_axes = main_axes.flatten()
+    fig = make_subplots(
+        rows=2,
+        cols=2,
+        horizontal_spacing=0.08,
+        vertical_spacing=0.12,
+        subplot_titles=[
+            f"True {class1} / Pred {class1}",
+            f"True {class1} / Pred {class2}",
+            f"True {class2} / Pred {class1}",
+            f"True {class2} / Pred {class2}",
+        ]
+    )
 
-    for idx, (X_case, ax) in enumerate(zip(cases, main_axes)):
-        ax.set_xticks([])
-        ax.set_yticks([])
-        # ax.set_title(case_titles[idx], fontsize=10)
+    for idx, X_case in enumerate(cases):
 
-        # Mini-grid inside each cell
-        rows = int(np.ceil(np.sqrt(n_per_cell)))
-        cols = rows
+        row = idx // 2 + 1
+        col = idx % 2 + 1
+
+        rows_mini = int(np.ceil(np.sqrt(n_per_cell)))
+        cols_mini = rows_mini
 
         for i, row_data in enumerate(X_case[:n_per_cell]):
+
             xs, ys = extract_hand_landmarks(row_data)
 
-            # Compute offsets for mini-grid
-            r = i // cols
-            c = i % cols
+            r = i // cols_mini
+            c = i % cols_mini
             offset_x = c * cell_padding * 50
             offset_y = r * cell_padding * 50
 
-            ax.scatter(xs + offset_x, ys + offset_y, s=20, c='red')
+            # Points
+            fig.add_trace(
+                go.Scatter(
+                    x=xs + offset_x,
+                    y=ys + offset_y,
+                    mode="markers",
+                    marker=dict(size=4),
+                    showlegend=False
+                ),
+                row=row,
+                col=col
+            )
+
+            # Connections
             for start, end in HAND_CONNECTIONS:
-                ax.plot([xs[start]+offset_x, xs[end]+offset_x],
-                        [ys[start]+offset_y, ys[end]+offset_y],
-                        linewidth=1, c='blue')
+                fig.add_trace(
+                    go.Scatter(
+                        x=[xs[start] + offset_x, xs[end] + offset_x],
+                        y=[ys[start] + offset_y, ys[end] + offset_y],
+                        mode="lines",
+                        line=dict(width=1),
+                        showlegend=False
+                    ),
+                    row=row,
+                    col=col
+                )
 
-        ax.invert_yaxis()
-        ax.axis("off")
+        fig.update_xaxes(visible=False, row=row, col=col)
+        fig.update_yaxes(visible=False, autorange="reversed", row=row, col=col)
 
-    # Add True/Predicted labels outside grid
-    fig.text(0.5, 0.95, "Predicted Label", ha='center', fontsize=14)
-    fig.text(0.05, 0.5, "True Label", va='center', rotation='vertical', fontsize=14)
+    # -----------------------------
+    # Clean Main Title
+    # -----------------------------
+    main_title = f"{model_name} | {dataset_name} | {class1} vs {class2}"
+    if f1_score is not None:
+        main_title += f"<br>F1 Score: {f1_score:.4f}"
 
-    # Add ticks with class names
-    fig.text(0.27, 0.97, class1, ha='center', fontsize=12)
-    fig.text(0.73, 0.97, class2, ha='center', fontsize=12)
-    fig.text(0.01, 0.75, class1, va='center', rotation='vertical', fontsize=12)
-    fig.text(0.01, 0.25, class2, va='center', rotation='vertical', fontsize=12)
+    fig.update_layout(
+        height=900,
+        width=1000,
+        title=dict(
+            text=main_title,
+            x=0.5,
+            xanchor="center"
+        ),
+        margin=dict(t=120)
+    )
 
-    # Draw separating lines between cells (table-like)
-    fig.add_artist(Line2D([0.5, 0.5], [0.1, 0.9], color='black', linewidth=2, transform=fig.transFigure))
-    fig.add_artist(Line2D([0.1, 0.9], [0.5, 0.5], color='black', linewidth=2, transform=fig.transFigure))
+    fig.show()
 
-    plt.tight_layout(rect=[0.1, 0.1, 0.95, 0.9])
-    plt.show()
-
-def plot_two_class_misclassified_grid(model, X, y_true, label_encoder, class1, class2, n_per_cell=1):
-    """
-    Plot a 2x2 mini confusion matrix for two selected classes with images.
-
-    Parameters
-    ----------
-    model : sklearn-like model
-        Fitted classifier with .predict().
-    X : pd.DataFrame or np.ndarray
-        Feature data (hand landmarks).
-    y_true : np.ndarray
-        True labels (encoded).
-    label_encoder : LabelEncoder
-        Fitted LabelEncoder to decode class names.
-    class1, class2 : str
-        Names of the two classes to compare.
-    n_per_cell : int
-        Number of images to show per cell.
-    """
-    # Encode the classes
-    c1_label = label_encoder.transform([class1])[0]
-    c2_label = label_encoder.transform([class2])[0]
-
-    y_pred = model.predict(X)
-
-    fig, axes = plt.subplots(2, 2, figsize=(8, 8))
-    axes = axes.flatten()
-
-    # Grid positions for True vs Pred
-    grid_positions = [
-        (c1_label, c1_label),  # True A, Pred A
-        (c1_label, c2_label),  # True A, Pred B
-        (c2_label, c1_label),  # True B, Pred A
-        (c2_label, c2_label),  # True B, Pred B
-    ]
-
-    for i, (true_lbl, pred_lbl) in enumerate(grid_positions):
-        idxs = np.where((y_true == true_lbl) & (y_pred == pred_lbl))[0]
-        axes[i].axis('off')  # hide axis by default
-
-        if len(idxs) == 0:
-            axes[i].set_title(f"T: {label_encoder.inverse_transform([true_lbl])[0]}\n"
-                              f"P: {label_encoder.inverse_transform([pred_lbl])[0]}\n(No samples)")
-            continue
-
-        # Pick up to n_per_cell examples
-        for j, idx in enumerate(idxs[:n_per_cell]):
-            row = X.iloc[idx] if hasattr(X, "iloc") else X[idx]
-            xs, ys = extract_hand_landmarks(row)
-            axes[i].scatter(xs, ys, c='red')
-            for start, end in HAND_CONNECTIONS:
-                axes[i].plot([xs[start], xs[end]], [ys[start], ys[end]], c='black')
-
-            axes[i].invert_yaxis()
-            axes[i].axis('off')
-            axes[i].set_title(f"T: {label_encoder.inverse_transform([true_lbl])[0]}\n"
-                              f"P: {label_encoder.inverse_transform([pred_lbl])[0]}")
-
-    plt.tight_layout()
-    plt.show()
+    return fig

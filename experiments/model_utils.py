@@ -3,6 +3,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
 import numpy as np
+import plotly.figure_factory as ff
 from visualizations import *
 
 class ModelTrainer:
@@ -106,44 +107,80 @@ class ModelTrainer:
                     print(f"{metric}: {value:.4f}")
 
     # ---------------------------
-    # Confusion Matrix (GENERALIZED)
+    # Confusion Matrix
     # ---------------------------
-    def plot_confusion_matrix(self, model_name, label_encoder, dataset_name):
-        metrics = self.results[model_name]["metrics"].get(dataset_name)
 
+    def plot_confusion_matrix(
+        trainer,
+        model_name,
+        label_encoder,
+        dataset_name="development",
+        cell_size=80
+    ):
+
+        metrics = trainer.results[model_name]["metrics"].get(dataset_name)
         if metrics is None:
             raise ValueError(f"No metrics stored for '{dataset_name}'")
 
         cm = metrics["confusion_matrix"]
-
-        # Normalize
         cm_norm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
 
-        # Create ONE figure with TWO subplots
-        fig, axes = plt.subplots(1, 2, figsize=(18, 8))
+        classes = label_encoder.classes_.tolist()
+        n_classes = len(classes)
 
-        # -------------------
-        # Raw Counts
-        # -------------------
-        disp = ConfusionMatrixDisplay(
-            confusion_matrix=cm,
-            display_labels=label_encoder.classes_
+        annotations = []
+        for i in range(n_classes):
+            row = []
+            for j in range(n_classes):
+                text = f"{cm[i,j]}<br>({cm_norm[i,j]*100:.1f}%)"
+                row.append(text)
+            annotations.append(row)
+
+        fig = ff.create_annotated_heatmap(
+            z=cm_norm,
+            x=classes,
+            y=classes,
+            annotation_text=annotations,
+            colorscale="Blues",
+            showscale=True
         )
-        disp.plot(ax=axes[0], cmap="Blues", xticks_rotation=90, values_format="d")
-        axes[0].set_title(f"Confusion Matrix (Counts)\n{model_name} | {dataset_name}")
 
-        # -------------------
-        # Normalized
-        # -------------------
-        disp_norm = ConfusionMatrixDisplay(
-            confusion_matrix=cm_norm,
-            display_labels=label_encoder.classes_
+        fig.update_layout(
+            title={
+                "text": f"{model_name} | {dataset_name} Confusion Matrix",
+                "y": 0.98,
+                "x": 0.5,
+                "xanchor": "center",
+                "yanchor": "top"
+            },
+
+            # Remove default xaxis_title
+            xaxis=dict(side="top"),
+
+            # Keep Y axis label normally
+            yaxis_title="True Label",
+
+            # Dynamic size
+            width=n_classes * cell_size,
+            height=n_classes * cell_size,
+
+            # Extra spacing
+            margin=dict(t=150, l=100, r=40, b=80),
+
+            annotations=fig.layout.annotations + (
+                dict(
+                    text="Predicted Label",
+                    x=0.5,
+                    y=1.084,
+                    xref="paper",
+                    yref="paper",
+                    showarrow=False,
+                    font=dict(size=14)
+                ),
+            )
         )
-        disp_norm.plot(ax=axes[1], cmap="Blues", xticks_rotation=90, values_format=".0%")
-        axes[1].set_title(f"Confusion Matrix (Normalized)\n{model_name} | {dataset_name}")
 
-        plt.tight_layout()
-        plt.show()
+        return fig
 
 
     def get_model(self, model_name):
