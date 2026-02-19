@@ -188,3 +188,30 @@ class ModelTrainer:
             raise ValueError(f"Model '{model_name}' not found.")
         
         return self.results[model_name]["model"]
+    
+
+def merge_trainers_for_comparison(trainers_list, X_train, y_train):
+    """
+    Merge metrics from multiple ModelTrainer instances into a single trainer.
+
+    Parameters
+    ----------
+    trainers_list : list
+        List of ModelTrainer instances (already trained & evaluated)
+    X_train : array-like
+        Training features (used to initialize the combined trainer)
+    y_train : array-like
+        Training labels (used to initialize the combined trainer)
+
+    Returns
+    -------
+    combined_trainer : ModelTrainer
+        A new ModelTrainer instance containing all merged results
+    """
+    combined_results = {}
+    for trainer in trainers_list:
+        combined_results.update(trainer.results)
+
+    combined_trainer = ModelTrainer(X_train, y_train)
+    combined_trainer.results = combined_results
+    return combined_trainer

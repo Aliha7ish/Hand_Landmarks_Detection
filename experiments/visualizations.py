@@ -409,3 +409,46 @@ def plot_two_class_table(
     fig.show()
 
     return fig
+
+def plot_model_comparison_radar(trainer, dataset_name="development"):
+    """
+    Plot a radar chart comparing multiple models' performance metrics.
+
+    Args:
+        trainer (ModelTrainer): An instance of the trained ModelTrainer class.
+        dataset_name (str): Dataset to use for metrics ('train', 'development', 'test').
+    """
+
+    metrics_names = ["accuracy", "precision", "recall", "f1_score"]
+
+    fig = go.Figure()
+
+    for model_name, info in trainer.results.items():
+        metrics = info["metrics"].get(dataset_name)
+        if metrics is None:
+            continue
+
+        # Collect metrics in the same order
+        values = [metrics[m] for m in metrics_names]
+
+        fig.add_trace(go.Scatterpolar(
+            r=values + [values[0]],  # close the loop
+            theta=metrics_names + [metrics_names[0]],
+            fill='toself',
+            name=model_name
+        ))
+
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 1]  # metrics are between 0 and 1
+            )
+        ),
+        title=f"Model Comparison on {dataset_name.capitalize()} Set",
+        showlegend=True,
+        width=700,
+        height=700
+    )
+
+    return fig

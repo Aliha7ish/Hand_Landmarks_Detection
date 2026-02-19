@@ -3,11 +3,13 @@ import tempfile
 import joblib
 import mlflow
 import mlflow.sklearn
+from mlflow.models import infer_signature
 
 # -------------------------------------------------
 # Set Experiment
 # -------------------------------------------------
 def set_experiment(experiment_name: str):
+    mlflow.set_tracking_uri("http://127.0.0.1:5000/")
     mlflow.set_experiment(experiment_name)
 
 
@@ -15,7 +17,9 @@ def set_experiment(experiment_name: str):
 # Start Run Context Manager
 # -------------------------------------------------
 def start_run(run_name: str):
-    return mlflow.start_run(run_name=run_name)
+    # nested=True allows a run to start even if a parent run is active
+    return mlflow.start_run(run_name=run_name, nested=True)
+
 
 
 # -------------------------------------------------
@@ -35,18 +39,20 @@ def log_metrics(metrics: dict):
 # -------------------------------------------------
 # Log Model
 # -------------------------------------------------
-def log_model(model, artifact_path="model"):
-    mlflow.sklearn.log_model(model, artifact_path=artifact_path)
-
-
-# -------------------------------------------------
-# Log Dataset (file or directory)
-# -------------------------------------------------
-def log_dataset(path: str, artifact_path="dataset"):
-    """
-    Log dataset file or folder.
-    """
-    mlflow.log_artifacts(path, artifact_path=artifact_path)
+def log_model(model, X_example=None, artifact_path="model"):
+    if X_example is not None:
+        signature = infer_signature(X_example, model.predict(X_example))
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path=artifact_path,
+            signature=signature,
+            input_example=X_example
+        )
+    else:
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path=artifact_path
+        )
 
 
 # -------------------------------------------------
@@ -72,8 +78,8 @@ def log_label_encoder(label_encoder, artifact_path="label_encoder"):
 # -------------------------------------------------
 # Log Sample DataFrame as CSV
 # -------------------------------------------------
-def log_dataframe_sample(df, artifact_name="dataset_sample.csv"):
+def log_dataframe(df, artifact_path="data", artifact_name="temp_dataset.csv"):
     with tempfile.TemporaryDirectory() as tmp_dir:
         sample_path = os.path.join(tmp_dir, artifact_name)
         df.to_csv(sample_path, index=False)
-        mlflow.log_artifact(sample_path, artifact_path="dataset_sample")
+        mlflow.log_artifact(sample_path, artifact_path=artifact_path)
