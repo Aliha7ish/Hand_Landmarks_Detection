@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def load_data(path):
     """
@@ -28,3 +29,84 @@ def load_data(path):
     y_test = test_df["label"]
 
     return X_train, y_train, X_dev, y_dev, X_test, y_test
+
+
+# preprocessing steps
+def preprocess_landmarks(data):
+    """
+    preprocessing function.
+    
+    Accepts:
+    - Single sample (42,)
+    - Numpy array (N, 42)
+    - Pandas DataFrame (with or without 'label')
+    
+    Returns:
+    - Same type structure (without label modification)
+    """
+
+    # -----------------------------
+    # Case 1: Pandas DataFrame
+    # -----------------------------
+    if isinstance(data, pd.DataFrame):
+        
+        df = data.copy()
+        
+        label = None
+        if 'label' in df.columns:
+            label = df['label']
+            df = df.drop(columns=['label'])
+        
+        X = df.values
+        X_processed = _process_numpy(X)
+        
+        df_processed = pd.DataFrame(X_processed, columns=df.columns)
+        
+        if label is not None:
+            df_processed['label'] = label.values
+            
+        return df_processed
+
+    # -----------------------------
+    # Case 2: Numpy array
+    # -----------------------------
+    elif isinstance(data, np.ndarray):
+        return _process_numpy(data)
+
+    else:
+        raise TypeError("Input must be numpy array or pandas DataFrame")
+
+
+def _process_numpy(X):
+    
+    X = np.array(X)
+    
+    # Single sample case (42,)
+    if X.ndim == 1:
+        X = X.reshape(1, -1)
+        single_sample = True
+    else:
+        single_sample = False
+    
+    # Reshape to (N, 21, 2)
+    X = X.reshape(-1, 21, 2)
+    
+    # -------- Recenter --------
+    wrist = X[:, 0:1, :]        # shape (N,1,2)
+    X = X - wrist
+    
+    # -------- Normalize --------
+    middle_tip = X[:, 12, :]    # shape (N,2)
+    scale = np.linalg.norm(middle_tip, axis=1).reshape(-1, 1, 1)
+    
+    scale[scale == 0] = 1  # avoid division by zero
+    X = X / scale
+    
+    # Back to (N, 42)
+    X = X.reshape(-1, 42)
+    
+    if single_sample:
+        return X[0]
+    
+    return X
+
