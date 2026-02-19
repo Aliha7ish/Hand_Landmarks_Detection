@@ -110,3 +110,30 @@ def _process_numpy(X):
     
     return X
 
+def denormalize_landmarks(row_data):
+    """
+    Denormalize a single preprocessed hand sample for plotting.
+    
+    Parameters
+    ----------
+    row_data : np.ndarray
+        Shape (42,) for a single hand sample (preprocessed)
+    
+    Returns
+    -------
+    xs, ys : np.ndarray
+        Denormalized x and y coordinates for plotting
+    """
+    # Reshape to (21,2)
+    sample = row_data.reshape(21, 2)
+    
+    # Use middle finger tip to estimate original scale
+    middle_tip = sample[12]
+    scale = np.linalg.norm(middle_tip)
+    if scale == 0:
+        scale = 1.0
+    
+    xs = sample[:, 0] * scale
+    ys = sample[:, 1] * scale
+    
+    return xs, ys

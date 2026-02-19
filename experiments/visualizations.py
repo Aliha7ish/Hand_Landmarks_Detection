@@ -7,6 +7,7 @@ import random
 from matplotlib.lines import Line2D
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from utils import denormalize_landmarks
 
 
 HAND_CONNECTIONS = [
@@ -345,12 +346,17 @@ def plot_two_class_table(
 
         for i, row_data in enumerate(X_case[:n_per_cell]):
 
-            xs, ys = extract_hand_landmarks(row_data)
+            # xs, ys = extract_hand_landmarks(row_data)
+            xs, ys = denormalize_landmarks(row_data)
 
             r = i // cols_mini
             c = i % cols_mini
             offset_x = c * cell_padding * 50
             offset_y = r * cell_padding * 50
+
+            plot_scale = 100  # tweak until hands are visible
+            xs = xs * plot_scale + offset_x
+            ys = ys * plot_scale + offset_y
 
             # Points
             fig.add_trace(
@@ -358,7 +364,7 @@ def plot_two_class_table(
                     x=xs + offset_x,
                     y=ys + offset_y,
                     mode="markers",
-                    marker=dict(size=4),
+                    marker=dict(size=6),
                     showlegend=False
                 ),
                 row=row,
