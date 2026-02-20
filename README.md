@@ -215,4 +215,12 @@ For deployment and live inference scenarios, Random Forest is the most reliable 
 
 However, SVM remains a strong secondary option if Random Forest underperforms in streaming or unseen environments.
 
-
+<p align="center">
+  <img src="mlflow_screenshots/registered_models.png" width="33%">
+</p>
+<p align="center">
+  <img src="mlflow_screenshots/in_production_registered_model.png" width="33%">
+</p>
+<p align="center">
+  <img src="mlflow_screenshots/archived_registered_model.png" width="33%">
+</p>
