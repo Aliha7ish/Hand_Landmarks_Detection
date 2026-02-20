@@ -26,7 +26,7 @@ The purpose of this study is to:
 - Output: Gesture class label  
 
 <p align="center">
-  <img src="Metrics Images/datasets_distribution.png" width="45%">
+  <img src="Metrics Images/datasets_distribution.png" width="50%">
 </p>
 
 ### 📈 Evaluation Metrics
@@ -53,9 +53,9 @@ All experiments were tracked using **MLflow**, and performance visualizations we
 Below are the performance summaries of the three models.
 
 <p align="center">
-  <img src="Metrics Images/DT Performance Metrics.png" width="32%">
-  <img src="Metrics Images/RandomForest Performance Metrics.png" width="32%">
-  <img src="Metrics Images/SVM Performance Metrics.png" width="32%">
+  <img src="Metrics Images/DT Performance Metrics.png" width="40%">
+  <img src="Metrics Images/RandomForest Performance Metrics.png" width="40%">
+  <img src="Metrics Images/SVM Performance Metrics.png" width="40%">
 </p>
 
 ### 🔎 Observations
@@ -214,3 +214,4 @@ The radar plot summarizes Accuracy, Precision, Recall, and F1-score across model
 For deployment and live inference scenarios, Random Forest is the most reliable candidate.
 
 However, SVM remains a strong secondary option if Random Forest underperforms in streaming or unseen environments.
+
