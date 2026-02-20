@@ -45,9 +45,6 @@ def preprocess_landmarks(data):
     - Same type structure (without label modification)
     """
 
-    # -----------------------------
-    # Case 1: Pandas DataFrame
-    # -----------------------------
     if isinstance(data, pd.DataFrame):
         
         df = data.copy()
@@ -66,10 +63,7 @@ def preprocess_landmarks(data):
             df_processed['label'] = label.values
             
         return df_processed
-
-    # -----------------------------
-    # Case 2: Numpy array
-    # -----------------------------
+    
     elif isinstance(data, np.ndarray):
         return _process_numpy(data)
 
@@ -91,11 +85,11 @@ def _process_numpy(X):
     # Reshape to (N, 21, 2)
     X = X.reshape(-1, 21, 2)
     
-    # -------- Recenter --------
+    # recenter
     wrist = X[:, 0:1, :]        # shape (N,1,2)
     X = X - wrist
     
-    # -------- Normalize --------
+    # normalize
     middle_tip = X[:, 12, :]    # shape (N,2)
     scale = np.linalg.norm(middle_tip, axis=1).reshape(-1, 1, 1)
     
