@@ -410,6 +410,55 @@ def plot_two_class_table(
 
     return fig
 
+
+def plot_dataset_split_distribution(y_train, y_dev, y_test, save_path=None):
+    """
+    Plot a bar chart showing the number of samples
+    in train, development, and test sets using seaborn.
+
+    Parameters
+    ----------
+    y_train : array-like
+        Training labels
+    y_dev : array-like
+        Development labels
+    y_test : array-like
+        Test labels
+    save_path : str, optional
+        If provided, saves the figure to this path.
+    """
+
+    # Count samples
+    data = {
+        "Dataset Split": ["Train", "Development", "Test"],
+        "Number of Samples": [len(y_train), len(y_dev), len(y_test)]
+    }
+
+    df = pd.DataFrame(data)
+
+    # Styling
+    sns.set_theme(style="whitegrid")
+
+    plt.figure(figsize=(8, 5))
+    ax = sns.barplot(
+        data=df,
+        x="Dataset Split",
+        y="Number of Samples"
+    )
+
+    # Add value labels on top of bars
+    for container in ax.containers:
+        ax.bar_label(container, fmt='%d', padding=3)
+
+    plt.title("Dataset Split Distribution", fontsize=14)
+    plt.xlabel("Dataset Split")
+    plt.ylabel("Number of Samples")
+
+    plt.tight_layout()
+
+    plt.show()
+
+
 def plot_model_comparison_radar(trainer, dataset_name="development"):
     """
     Plot a radar chart comparing multiple models' performance metrics.
