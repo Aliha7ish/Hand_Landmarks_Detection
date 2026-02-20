@@ -4,6 +4,5 @@ Pillow
 numpy
 seaborn
 scikit-learn
-mlflow
 notebook
 plotly
