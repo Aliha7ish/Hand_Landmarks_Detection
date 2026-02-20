@@ -53,9 +53,9 @@ All experiments were tracked using **MLflow**, and performance visualizations we
 Below are the performance summaries of the three models.
 
 <p align="center">
-  <img src="Metrics Images/DT Performance Metrics.png" width="40%">
-  <img src="Metrics Images/RandomForest Performance Metrics.png" width="40%">
-  <img src="Metrics Images/SVM Performance Metrics.png" width="40%">
+  <img src="Metrics Images/DT Performance Metrics.png" width="33%">
+  <img src="Metrics Images/RandomForest Performance Metrics.png" width="33%">
+  <img src="Metrics Images/SVM Performance Metrics.png" width="33%">
 </p>
 
 ### 🔎 Observations
@@ -127,9 +127,9 @@ The SVM demonstrates stable generalization but shows increased confusion between
 Below are examples of correctly classified gestures per model.
 
 <p align="center">
-  <img src="Metrics Images/DT True Gestures.png" width="32%">
-  <img src="Metrics Images/RandomForest True Predictions.png" width="32%">
-  <img src="Metrics Images/SVM True Predictions.png" width="32%">
+  <img src="Metrics Images/DT True Gestures.png" width="33%">
+  <img src="Metrics Images/RandomForest True Predictions.png" width="33%">
+  <img src="Metrics Images/SVM True Predictions.png" width="33%">
 </p>
 
 ### 💡 Insight
@@ -157,9 +157,9 @@ Below are TP / TN / FP / FN comparisons for each model.
 - SVM  
 
 <p align="center">
-  <img src="Metrics Images/DT Comparing Classes.png" width="32%">
-  <img src="Metrics Images/RandomForest Comparing Classes.png" width="32%">
-  <img src="Metrics Images/SVM Comparing Classes.png" width="32%">
+  <img src="Metrics Images/DT Comparing Classes.png" width="33%">
+  <img src="Metrics Images/RandomForest Comparing Classes.png" width="33%">
+  <img src="Metrics Images/SVM Comparing Classes.png" width="33%">
 </p>
 
 ### Findings
@@ -174,7 +174,7 @@ Below are TP / TN / FP / FN comparisons for each model.
 
 The radar plot summarizes Accuracy, Precision, Recall, and F1-score across models.
 <p align="center">
-  <img src="Metrics Images/Models Metrics Radar.png" width="40%">
+  <img src="Metrics Images/Models Metrics Radar.png" width="50%">
 </p>
 
 
@@ -214,4 +214,5 @@ The radar plot summarizes Accuracy, Precision, Recall, and F1-score across model
 For deployment and live inference scenarios, Random Forest is the most reliable candidate.
 
 However, SVM remains a strong secondary option if Random Forest underperforms in streaming or unseen environments.
+
 
