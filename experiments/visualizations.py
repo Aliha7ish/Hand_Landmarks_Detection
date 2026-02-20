@@ -459,6 +459,76 @@ def plot_dataset_split_distribution(y_train, y_dev, y_test, save_path=None):
     plt.show()
 
 
+def plot_model_performance_subplots(trainer, model_name, save_path=None):
+    """
+    Create 2x2 subplot visualization for Accuracy, Precision,
+    Recall, and F1-score across Train, Dev, and Test sets.
+    """
+
+    sns.set_theme(style="whitegrid")
+
+    # Extract metrics
+    metrics = trainer.results[model_name]["metrics"]
+
+    data = []
+    for dataset in metrics:
+        if dataset == "confusion_matrix":
+            continue
+        for metric_name, value in metrics[dataset].items():
+            if metric_name != "confusion_matrix":
+                data.append({
+                    "Dataset": dataset,
+                    "Metric": metric_name,
+                    "Score": value
+                })
+
+    df = pd.DataFrame(data)
+
+    metric_list = ["accuracy", "precision", "recall", "f1_score"]
+
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+    axes = axes.flatten()
+
+    for i, metric in enumerate(metric_list):
+        ax = axes[i]
+
+        subset = df[df["Metric"] == metric]
+
+        sns.barplot(
+            data=subset,
+            x="Dataset",
+            y="Score",
+            ax=ax
+        )
+
+        # Increase y-limit slightly to prevent overlap
+        ax.set_ylim(0, 1.08)
+
+        # Add padding to subplot title
+        ax.set_title(
+            metric.replace("_", " ").capitalize(),
+            pad=12
+        )
+
+        # Add value labels
+        for container in ax.containers:
+            ax.bar_label(container, fmt="%.3f", padding=3)
+
+        sns.despine(ax=ax)
+
+
+    # Clean main title only
+    fig.suptitle(f"{model_name} Performance Across Datasets", fontsize=14, y=1.02)
+
+    plt.tight_layout()
+
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches="tight")
+        plt.close()
+    else:
+        plt.show()
+
+
 def plot_model_comparison_radar(trainer, dataset_name="development"):
     """
     Plot a radar chart comparing multiple models' performance metrics.
