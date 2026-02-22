@@ -36,3 +36,5 @@ hand_gest_env/
 # Dataset variants (keep only hand_landmarks_data.csv)
 dataset/hand_landmarks_data_f32.csv
 dataset/hand_landmarks_data_no_z.csv
+
+test media/
