@@ -300,6 +300,12 @@ Click the image below to watch the full demo on YouTube:
 
 ---
 
+### 🎥 Real-Time Gesture Recognition Demo
+
+[![Watch the Demo]](https://github.com/user-attachments/assets/649cac71-1b1f-4325-85b1-2af46b15069f)
+
+---
+
 ### 📊 Confusion Matrix & Metrics
 
 <p align="center">
