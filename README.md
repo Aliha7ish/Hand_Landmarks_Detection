@@ -51,6 +51,32 @@ Each sample contains:
   <img src="https://github.com/user-attachments/assets/99578bd7-8d68-48e3-bb95-87c1d75a8dcf" width="60%">
 </p>
 
+
+### ✋ Supported Gesture Classes
+
+| Gesture  | Example |
+|----------|----------|
+| three2  | <img src="assets/classes/three-two.png" width="150"> |
+| palm  | <img src="assets/classes/palm.png" width="150"> |
+| four  | <img src="assets/classes/four.png" width="150"> |
+| stop_inverted  | <img src="assets/classes/stop-inverted.png" width="150"> |
+| ok  | <img src="assets/classes/ok.png" width="150"> |
+| call  | <img src="assets/classes/call.png" width="150"> |
+| peace_inverted  | <img src="assets/classes/peace-inverted.png" width="150"> |
+| stop  | <img src="assets/classes/stop.png" width="150"> |
+| rock  | <img src="assets/classes/rock.png" width="150"> |
+| three  | <img src="assets/classes/three.png" width="150"> |
+| like  | <img src="assets/classes/like.png" width="150"> |
+| peace  | <img src="assets/classes/peace.png" width="150"> |
+| two_up_inverted  | <img src="assets/classes/two-up-inverted.png" width="150"> |
+| two_up  | <img src="assets/classes/two-up.png" width="150"> |
+| dislike  | <img src="assets/classes/dislike.png" width="150"> |
+| one  | <img src="assets/classes/one.png" width="150"> |
+| mute  | <img src="assets/classes/mute.png" width="150"> |
+| fist  | <img src="assets/classes/fist.png" width="150"> |
+
+
+
 ### Structure
 
 ```
@@ -247,6 +273,7 @@ Hand Marks Detection/
 │   └── transformers/
 │       └── label_encoder.pkl
 ├── helpers/
+├── assets/
 └── notebooks/
 ```
 
@@ -257,26 +284,26 @@ Hand Marks Detection/
 ### 📷 Sample Image Predictions
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/1f6f34b6-c40c-444e-81e3-dc9f31451079" width="50%">
-  <img src="https://github.com/user-attachments/assets/1627d4af-f282-43c9-b857-d21fd0caeb52" width="50%">
-  <img src="https://github.com/user-attachments/assets/58828bd3-ddae-40db-9245-e1e9691d8840" width="50%">
-  <img src="https://github.com/user-attachments/assets/6926bf10-a906-4610-ae86-21810e092527" width="50%">
+  <img src="![Image](https://github.com/user-attachments/assets/1f6f34b6-c40c-444e-81e3-dc9f31451079)" width="50%">
+  <img src="![Image](https://github.com/user-attachments/assets/1627d4af-f282-43c9-b857-d21fd0caeb52)" width="50%">
+  <img src="![Image](https://github.com/user-attachments/assets/58828bd3-ddae-40db-9245-e1e9691d8840)" width="50%">
+  <img src="![Image](https://github.com/user-attachments/assets/6926bf10-a906-4610-ae86-21810e092527)" width="50%">
 </p>
 ---
 
 ### 🎥 Sample Video Predictions
 
-[![Watch the demo]](https://github.com/user-attachments/assets/3cc99348-bd90-4a2d-8084-c2e9488e1a0a)
+<video src="https://github.com/user-attachments/assets/42890471-004f-46df-a5cd-afbb084e56ea" controls width="50%"></video>
 
 ---
 
 ### 📊 Confusion Matrix & Metrics
 
 <p align="center">
-  <img src="Metrics Images/Models Metrics Radar.png" width="50%">
-  <img src="Metrics Images/RandomForest Comparing Classes.png" width="50%">
-  <img src="Metrics Images/DT Confusion Mtarix.png" width="50%">
-  <img src="Metrics Images/SVM Performance Metrics.png" width="50%">
+  <img src="assets/Metrics Images/Models Metrics Radar.png" width="50%">
+  <img src="assets/Metrics Images\RandomForest Comparing Classes.png" width="50%">
+  <img src="assets/Metrics Images/DT Confusion Mtarix.png" width="50%">
+  <img src="assets/Metrics Images/SVM Performance Metrics.png" width="50%">
 </p>
 
 ---
