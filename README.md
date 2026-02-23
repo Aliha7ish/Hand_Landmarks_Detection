@@ -266,7 +266,7 @@ Hand Marks Detection/
 
 ### 🎥 Sample Video Predictions
 
-[Watch Demo Video](https://github.com/user-attachments/assets/3cc99348-bd90-4a2d-8084-c2e9488e1a0a)
+[![Watch the demo]](https://github.com/user-attachments/assets/3cc99348-bd90-4a2d-8084-c2e9488e1a0a)
 
 ---
 
