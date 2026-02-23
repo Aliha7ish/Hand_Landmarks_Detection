@@ -283,12 +283,14 @@ Hand Marks Detection/
 
 ### 📷 Sample Image Predictions
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/1f6f34b6-c40c-444e-81e3-dc9f31451079" width="50%">
-  <img src="https://github.com/user-attachments/assets/1627d4af-f282-43c9-b857-d21fd0caeb52" width="50%">
-  <img src="https://github.com/user-attachments/assets/58828bd3-ddae-40db-9245-e1e9691d8840" width="50%">
-  <img src="https://github.com/user-attachments/assets/6926bf10-a906-4610-ae86-21810e092527" width="50%">
-</p>
+<table align="center">
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/1f6f34b6-c40c-444e-81e3-dc9f31451079" width="200px"></td>
+    <td><img src="https://github.com/user-attachments/assets/1627d4af-f282-43c9-b857-d21fd0caeb52" width="200px"></td>
+    <td><img src="https://github.com/user-attachments/assets/58828bd3-ddae-40db-9245-e1e9691d8840" width="200px"></td>
+    <td><img src="https://github.com/user-attachments/assets/6926bf10-a906-4610-ae86-21810e092527" width="200px"></td>
+  </tr>
+</table>
 
 ---
 
@@ -296,7 +298,11 @@ Hand Marks Detection/
 
 Click the image below to watch the full demo on YouTube:
 
-[![Watch the Demo](https://img.youtube.com/vi/w7reW9YN2dk/0.jpg)](https://youtu.be/w7reW9YN2dk)
+<p align="center">
+  <a href="https://youtu.be/w7reW9YN2dk">
+    <img src="https://img.youtube.com/vi/w7reW9YN2dk/0.jpg" alt="Watch the Demo">
+  </a>
+</p>
 
 ---
 
