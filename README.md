@@ -56,24 +56,24 @@ Each sample contains:
 
 | Gesture  | Example |
 |----------|----------|
-| three2  | <img src="assets/classes/three-two.png" width="150"> |
-| palm  | <img src="assets/classes/palm.png" width="150"> |
-| four  | <img src="assets/classes/four.png" width="150"> |
-| stop_inverted  | <img src="assets/classes/stop-inverted.png" width="150"> |
-| ok  | <img src="assets/classes/ok.png" width="150"> |
-| call  | <img src="assets/classes/call.png" width="150"> |
-| peace_inverted  | <img src="assets/classes/peace-inverted.png" width="150"> |
-| stop  | <img src="assets/classes/stop.png" width="150"> |
-| rock  | <img src="assets/classes/rock.png" width="150"> |
-| three  | <img src="assets/classes/three.png" width="150"> |
-| like  | <img src="assets/classes/like.png" width="150"> |
-| peace  | <img src="assets/classes/peace.png" width="150"> |
-| two_up_inverted  | <img src="assets/classes/two-up-inverted.png" width="150"> |
-| two_up  | <img src="assets/classes/two-up.png" width="150"> |
-| dislike  | <img src="assets/classes/dislike.png" width="150"> |
-| one  | <img src="assets/classes/one.png" width="150"> |
-| mute  | <img src="assets/classes/mute.png" width="150"> |
-| fist  | <img src="assets/classes/fist.png" width="150"> |
+| three2  | <img src="assets/classes/three-two.png" width="40%"> |
+| palm  | <img src="assets/classes/palm.png" width="40%"> |
+| four  | <img src="assets/classes/four.png" width="40%"> |
+| stop_inverted  | <img src="assets/classes/stop-inverted.png" width="40%"> |
+| ok  | <img src="assets/classes/ok.png" width="40%"> |
+| call  | <img src="assets/classes/call.png" width="40%"> |
+| peace_inverted  | <img src="assets/classes/peace-inverted.png" width="40%"> |
+| stop  | <img src="assets/classes/stop.png" width="40%"> |
+| rock  | <img src="assets/classes/rock.png" width="40%"> |
+| three  | <img src="assets/classes/three.png" width="40%"> |
+| like  | <img src="assets/classes/like.png" width="40%"> |
+| peace  | <img src="assets/classes/peace.png" width="40%"> |
+| two_up_inverted  | <img src="assets/classes/two-up-inverted.png" width="40%"> |
+| two_up  | <img src="assets/classes/two-up.png" width="40%"> |
+| dislike  | <img src="assets/classes/dislike.png" width="40%"> |
+| one  | <img src="assets/classes/one.png" width="40%"> |
+| mute  | <img src="assets/classes/mute.png" width="40%"> |
+| fist  | <img src="assets/classes/fist.png" width="40%"> |
 
 
 
