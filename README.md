@@ -273,7 +273,7 @@ Hand Marks Detection/
 ### 📊 Confusion Matrix & Metrics
 
 <p align="center">
-  <img src="Metrics Images/Models Metrics Radar.png.png" width="50%">
+  <img src="Metrics Images/Models Metrics Radar.png" width="50%">
   <img src="Metrics Images/RandomForest Comparing Classes.png" width="50%">
   <img src="Metrics Images/DT Confusion Mtarix.png" width="50%">
   <img src="Metrics Images/SVM Performance Metrics.png" width="50%">
