@@ -39,3 +39,4 @@ dataset/hand_landmarks_data_no_z.csv
 
 test media/
 test.ipynb
+outputs/
