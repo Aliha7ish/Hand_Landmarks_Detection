@@ -56,24 +56,24 @@ Each sample contains:
 
 | Gesture  | Example |
 |----------|----------|
-| three2  | <img src="assets/classes/three-two.png" width="40%"> |
-| palm  | <img src="assets/classes/palm.png" width="40%"> |
-| four  | <img src="assets/classes/four.png" width="40%"> |
-| stop_inverted  | <img src="assets/classes/stop-inverted.png" width="40%"> |
-| ok  | <img src="assets/classes/ok.png" width="40%"> |
-| call  | <img src="assets/classes/call.png" width="40%"> |
-| peace_inverted  | <img src="assets/classes/peace-inverted.png" width="40%"> |
-| stop  | <img src="assets/classes/stop.png" width="40%"> |
-| rock  | <img src="assets/classes/rock.png" width="40%"> |
-| three  | <img src="assets/classes/three.png" width="40%"> |
-| like  | <img src="assets/classes/like.png" width="40%"> |
-| peace  | <img src="assets/classes/peace.png" width="40%"> |
-| two_up_inverted  | <img src="assets/classes/two-up-inverted.png" width="40%"> |
-| two_up  | <img src="assets/classes/two-up.png" width="40%"> |
-| dislike  | <img src="assets/classes/dislike.png" width="40%"> |
-| one  | <img src="assets/classes/one.png" width="40%"> |
-| mute  | <img src="assets/classes/mute.png" width="40%"> |
-| fist  | <img src="assets/classes/fist.png" width="40%"> |
+| three2  | <img src="assets/classes/three-two.png" width="200"> |
+| palm  | <img src="assets/classes/palm.png" width="200"> |
+| four  | <img src="assets/classes/four.png" width="200"> |
+| stop_inverted  | <img src="assets/classes/stop-inverted.png" width="200"> |
+| ok  | <img src="assets/classes/ok.png" width="200"> |
+| call  | <img src="assets/classes/call.png" width="200"> |
+| peace_inverted  | <img src="assets/classes/peace-inverted.png" width="200"> |
+| stop  | <img src="assets/classes/stop.png" width="200"> |
+| rock  | <img src="assets/classes/rock.png" width="200"> |
+| three  | <img src="assets/classes/three.png" width="200"> |
+| like  | <img src="assets/classes/like.png" width="200"> |
+| peace  | <img src="assets/classes/peace.png" width="200"> |
+| two_up_inverted  | <img src="assets/classes/two-up-inverted.png" width="200"> |
+| two_up  | <img src="assets/classes/two-up.png" width="200"> |
+| dislike  | <img src="assets/classes/dislike.png" width="200"> |
+| one  | <img src="assets/classes/one.png" width="200"> |
+| mute  | <img src="assets/classes/mute.png" width="200"> |
+| fist  | <img src="assets/classes/fist.png" width="200"> |
 
 
 
@@ -289,11 +289,14 @@ Hand Marks Detection/
   <img src="https://github.com/user-attachments/assets/58828bd3-ddae-40db-9245-e1e9691d8840" width="50%">
   <img src="https://github.com/user-attachments/assets/6926bf10-a906-4610-ae86-21810e092527" width="50%">
 </p>
+
 ---
 
 ### 🎥 Sample Video Predictions
 
-<video src="https://github.com/user-attachments/assets/42890471-004f-46df-a5cd-afbb084e56ea" controls width="50%"></video>
+Click the image below to watch the full demo on YouTube:
+
+[![Watch the Demo](https://img.youtube.com/vi/w7reW9YN2dk/0.jpg)](https://youtu.be/w7reW9YN2dk)
 
 ---
 
