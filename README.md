@@ -247,9 +247,7 @@ Hand Marks Detection/
 │   └── transformers/
 │       └── label_encoder.pkl
 ├── helpers/
-├── notebooks/
-├── test media/
-└── hand_gest_env/
+└── notebooks/
 ```
 
 ---
@@ -268,7 +266,7 @@ Hand Marks Detection/
 
 ### 🎥 Sample Video Predictions
 
-<video src="https://github.com/user-attachments/assets/42890471-004f-46df-a5cd-afbb084e56ea" controls width="50%"></video>
+[Watch Demo Video](https://github.com/user-attachments/assets/3cc99348-bd90-4a2d-8084-c2e9488e1a0a)
 
 ---
 
